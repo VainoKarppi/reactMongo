@@ -26,8 +26,6 @@ import ErrorPage from "./error-page";
 
 
 
-
-
 // main elements
 const router = createBrowserRouter([
   {

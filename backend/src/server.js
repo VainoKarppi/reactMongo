@@ -1,8 +1,17 @@
 const express = require('express')
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cors = require('cors'); // Import the cors package
+
 
 const app = express()
+
+// Enable CORS for all routes from frontend
+app.use(cors({
+  origin: 'http://localhost:5173', // Allow requests from this origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specified HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specified headers
+}));
 
 
 const PORT = 3000;
