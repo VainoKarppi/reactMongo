@@ -11,21 +11,12 @@ function isEmptyArray(data) {
 
 // GET all users
 router.get('/', async (req, res) => {
-    console.log("aaaaa");
+    
     try {
+        console.log("Request for all users...");
         const users = await Contact.find();
-        
-        console.log(users);
-        console.log(typeof users);
-
-        if (isEmptyArray(users)) {
-            console.log("4444");
-            res.json(users);
-        } else {
-            
-            console.log("2222");
-            res.json(users);
-        }
+        console.log(`data: ${users}`);
+        res.json(users);
 
     } catch (err) {
         console.log("1111");
@@ -38,11 +29,46 @@ router.get('/:id', getUser, (req, res) => {
   res.json(res.user);
 });
 
+// PUT old user
+router.put('/createContact', async (req, res) => {
+
+    const { id } = req.body;
+    console.log("UPDATING CONTACT!");
+    console.log(id);
+
+});
+
+
+// DLETE contact
+router.delete('/removeContact/:id', async (req, res) => {
+
+    const { id } = req.params;
+    console.log("REMOVED CONTACT!");
+    
+
+    user = await Contact.findById(id);
+    console.log(user);
+
+    try {
+        //await user.delete();
+        res.status(201);
+        console.log("SUCCESS");
+    } catch (err) {
+        console.log("ERROR");
+        console.log(err);
+        res.status(400).json({ message: err.message });
+    }
+});
+
 // POST new user
-router.post('/', async (req, res) => {
-    console.log("asadsasd");
-    const user = new User({
-        id: req.body.id,
+router.post('/createContact', async (req, res) => {
+    console.log("creating contact on server!!!");
+
+    
+    let newId = Math.random().toString(36).substring(2, 9);
+
+    const user = new Contact({
+        id: newId,
         createdAt: req.body.createdAt,
         firstname: req.body.firstname,
         lastname: req.body.lastname,
@@ -51,9 +77,14 @@ router.post('/', async (req, res) => {
         notes: req.body.notes
     });
     try {
+
+        console.log(user);
         const newUser = await user.save();
         res.status(201).json(newUser);
+        console.log("SUCCESS");
     } catch (err) {
+        console.log("ERROR");
+        console.log(err);
         res.status(400).json({ message: err.message });
     }
 });
@@ -63,9 +94,9 @@ router.post('/', async (req, res) => {
 async function getUser(req, res, next) {
   let user;
   try {
-    user = await User.findById(req.params.id);
+    user = await Contact.findById(req.params.id);
     if (user == null) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'Contact not found' });
     }
   } catch (err) {
     return res.status(500).json({ message: err.message });

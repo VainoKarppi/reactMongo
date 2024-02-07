@@ -10,20 +10,20 @@ export async function getContacts(query) {
   // TODO backend get
   //let contacts = await localforage.getItem("contacts");
   try {
-    console.log("requesting");
-    const response = await axios.get('http://localhost:3000/api/contactRoutes');
+    console.log("requesting ALL contacts...");
+    const response = await axios.get('/api/contactRoutes');
     let contacts = response.data;
 
-    console.log("dddddddddddddddd");
     console.log(contacts);
+
     if (!contacts) contacts = [];
 
-
-    console.log("11111");
 
     if (query) {
       contacts = matchSorter(contacts, query, { keys: ["first", "last"] });
     }
+
+    // TODO sortby
     return contacts.sort(sortBy("last", "createdAt"));
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -36,6 +36,8 @@ export async function createContact() {
 
   // TODO
   let contact = { id, createdAt: Date.now() };
+
+
 
   //TODO push only single contact instead of whole set
   let contacts = await getContacts();
@@ -52,12 +54,7 @@ export async function getContact(id) {
   // TODO backend
   let contacts = await localforage.getItem("contacts");
 
-  let data = axios.get('/api/contactRoutes')
-      .then(response => setUsers(response.data))
-      .catch(error => console.error('Error fetching users:', error));
 
-  
-  console.log(data);
 
   let contact = contacts.find(contact => contact.id === id);
   return contact ?? null;
@@ -66,18 +63,31 @@ export async function getContact(id) {
 // Update contacts list
 export async function updateContact(id, updates) {
 
+  if (id === undefined || id === null) {
+    // UPDATE EXISTING USER DATA
+    axios.put("/api/contactRoutes/createContact",id)
+      .then(response => {
+        console.log('Contact updated successfully:', response.data);
+      })
+      .catch(error => {
+        console.error('Error updating contact:', error);
+    });
+  } else {
+    // CREATE NEW USER
+    axios.post("/api/contactRoutes/createContact")
+      .then(response => {
+        console.log('Contact created successfully:', response.data);
+      })
+      .catch(error => {
+        console.error('Error creating contact:', error);
+    });
+  }
 
 
   
   //TODO backend
   let contacts = await localforage.getItem("contacts");
 
-  let data = axios.put('/api/contactRoutes')
-      .then(response => setUsers(response.data))
-      .catch(error => console.error('Error fetching users:', error));
-
-  
-  console.log(data);
 
   let contact = contacts.find(contact => contact.id === id);
 
@@ -88,24 +98,23 @@ export async function updateContact(id, updates) {
   return contact;
 }
 
-export async function setUsers(data) {
-  console.log("ASDASD");
-  console.log(data);
-}
+
 
 
 // Delete contact from list
 export async function deleteContact(id) {
   //TODO backend
-  let contacts = await localforage.getItem("contacts");
+  console.log("Removing contact...");
 
-  let index = contacts.findIndex(contact => contact.id === id);
-  if (index > -1) {
-    contacts.splice(index, 1);
-    await set(contacts);
-    return true;
-  }
-  return false;
+  await axios.delete(`/api/contactRoutes/removeContact/${id}`)
+      .then(response => {
+        console.log('Contact updated successfully:', response.data);
+        return true;
+      })
+      .catch(error => {
+        console.error('Error updating contact:', error);
+        return false;
+    });
 }
 
 function set(contacts) {
