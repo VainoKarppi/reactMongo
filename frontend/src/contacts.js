@@ -1,10 +1,10 @@
 import localforage from "localforage";
 import { matchSorter } from "match-sorter";
 import sortBy from "sort-by";
+import axios from 'axios';
 
 // Query contacts from list
 export async function getContacts(query) {
-  await fakeNetwork(`getContacts:${query}`);
 
   // TODO backend get
   let contacts = await localforage.getItem("contacts");
@@ -18,7 +18,6 @@ export async function getContacts(query) {
 
 // Create new contact with values
 export async function createContact() {
-  await fakeNetwork();
   let id = Math.random().toString(36).substring(2, 9);
   let contact = { id, createdAt: Date.now() };
   let contacts = await getContacts();
@@ -29,7 +28,6 @@ export async function createContact() {
 
 // Get single contact from list
 export async function getContact(id) {
-  await fakeNetwork(`contact:${id}`);
 
   // TODO backend
   let contacts = await localforage.getItem("contacts");
@@ -40,7 +38,6 @@ export async function getContact(id) {
 
 // Update contacts list
 export async function updateContact(id, updates) {
-  await fakeNetwork();
 
   //TODO backend
   let contacts = await localforage.getItem("contacts");
@@ -48,7 +45,7 @@ export async function updateContact(id, updates) {
   let contact = contacts.find(contact => contact.id === id);
   if (!contact) throw new Error("No contact found for", id);
   Object.assign(contact, updates);
-  
+
   await set(contacts);
   return contact;
 }
@@ -72,21 +69,3 @@ function set(contacts) {
   return localforage.setItem("contacts", contacts);
 }
 
-// fake a cache so we don't slow down stuff we've already seen
-let fakeCache = {};
-
-// Simulate loading and cadd fake cache
-async function fakeNetwork(key) {
-  if (!key) {
-    fakeCache = {};
-  }
-
-  if (fakeCache[key]) {
-    return;
-  }
-
-  fakeCache[key] = true;
-  return new Promise(res => {
-    setTimeout(res, Math.random() * 800);
-  });
-}

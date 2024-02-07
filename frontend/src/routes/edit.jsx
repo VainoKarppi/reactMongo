@@ -6,7 +6,7 @@ import { updateContact } from "../contacts";
 export async function action({ request, params }) {
   const formData = await request.formData();
   const updates = Object.fromEntries(formData);
-
+  
   // TODO call backend store data
   await updateContact(params.contactId, updates);
 
