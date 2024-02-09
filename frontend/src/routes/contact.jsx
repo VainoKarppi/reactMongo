@@ -2,7 +2,17 @@ import { Form, useLoaderData, useFetcher ,} from "react-router-dom";
 import { getContact, updateContact, } from "../contacts";
 
 export async function loader({ params }) {
+
+
+    if (params.contactId === undefined) {
+      return {  };
+    }
+  console.log(params);
   const contact = await getContact(params.contactId);
+  console.log(2);
+
+
+  
   if (!contact) {
     throw new Response("", {
       status: 404,
@@ -17,7 +27,7 @@ export async function loader({ params }) {
 export async function action({ request, params }) {
   let formData = await request.formData();
   
-  return updateContact(params.contactId, {
+  return updateContact(params.id, {
     favorite: formData.get("favorite") === "true",
   });
 }
@@ -38,9 +48,9 @@ export default function Contact() {
 
       <div>
         <h1>
-          {contact.first || contact.last ? (
+          {contact.firstname || contact.lastname ? (
             <>
-              {contact.first} {contact.last}
+              {contact.firstname} {contact.lastname}
             </>
           ) : (
             <i>No Name</i>

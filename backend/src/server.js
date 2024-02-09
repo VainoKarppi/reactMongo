@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors'); // Import the cors package
 
+const Contact = require('./models/contactModels');
 
 const app = express()
 
@@ -19,20 +20,27 @@ const PORT = 3000;
 // Middleware
 app.use(bodyParser.json());
 
-// MongoDB Connection
-mongoose.connect('mongodb://localhost:27017/react-task-users', { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
-
-
 
 // Routes
 const itemsRouter = require('./routes/contactRoutes');
 app.use('/api/contactRoutes', itemsRouter);
 
 
-app.get('/', function (req, res) { res.send('Hello World') })
+// MongoDB Connection
+mongoose.connect('mongodb://localhost:27017/react-task-users', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('MongoDB Connected');
 
 
-// Start server
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    // Delete all documents from the collection
+    Contact.deleteMany({})
+      .then(() => {
+        console.log('All data cleared from the collection.');
+      })
+      .catch(err => console.error('Error clearing data:', err));
+    
+    // Start server
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  })
+  .catch(err => console.log(err));
+

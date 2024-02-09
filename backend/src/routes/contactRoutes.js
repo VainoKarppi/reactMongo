@@ -10,16 +10,14 @@ function isEmptyArray(data) {
 }
 
 // GET all users
-router.get('/', async (req, res) => {
-    
+router.get('/allUsers', async (req, res) => {
     try {
         console.log("Request for all users...");
         const users = await Contact.find();
-        console.log(`data: ${users}`);
-        res.json(users);
-
+        console.log(users);
+        res.status(201).json(users);
     } catch (err) {
-        console.log("1111");
+        console.log(err);
         res.status(500).json({ message: err.message });
     }
 });
@@ -40,47 +38,37 @@ router.put('/createContact', async (req, res) => {
 
 
 // DLETE contact
-router.delete('/removeContact/:id', async (req, res) => {
-
-    const { id } = req.params;
-    console.log("REMOVED CONTACT!");
-    
-
-    user = await Contact.findById(id);
-    console.log(user);
-
-    try {
-        //await user.delete();
-        res.status(201);
-        console.log("SUCCESS");
-    } catch (err) {
-        console.log("ERROR");
-        console.log(err);
-        res.status(400).json({ message: err.message });
+router.delete('/contacts/:id', async (req, res) => {
+  try {
+    const deletedContact = await Contact.findByIdAndDelete(req.params.id);
+    if (!deletedContact) {
+      return res.status(404).json({ message: 'Contact not found' });
     }
+    res.json({ message: 'Contact deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 // POST new user
-router.post('/createContact', async (req, res) => {
+router.post('/contacts', async (req, res) => {
     console.log("creating contact on server!!!");
-
     
-    let newId = Math.random().toString(36).substring(2, 9);
+    // generate user id
+    if (req.body.id === undefined || req.body.id === null) {
+        req.body.id = Math.random().toString(36).substring(2, 9);
+    }
 
-    const user = new Contact({
-        id: newId,
-        createdAt: req.body.createdAt,
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        twitter: req.body.twitter,
-        avatarUrl: req.body.avatarUrl,
-        notes: req.body.notes
-    });
+
+    // generate time created if not defined
+    if (req.body.createdAt === undefined || req.body.createdAt === null) {
+        req.body.createdAt = Date.now();
+    }
+
     try {
-
-        console.log(user);
-        const newUser = await user.save();
-        res.status(201).json(newUser);
+        console.log(req.body);
+        const contact = await Contact.create(req.body);
+        res.status(201).json(contact);
         console.log("SUCCESS");
     } catch (err) {
         console.log("ERROR");
@@ -88,6 +76,29 @@ router.post('/createContact', async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 });
+
+
+
+
+
+// Update a contact
+router.patch('/contacts/:id', async (req, res) => {
+    try {
+      const updatedContact = await Contact.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!updatedContact) {
+            return res.status(404).json({ message: 'Contact not found' });
+        }
+        res.json(updatedContact);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+
+
+
+
+
 
 // ... other routes for update, delete, etc.
 

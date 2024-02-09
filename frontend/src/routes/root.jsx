@@ -11,14 +11,13 @@ import {
     useSubmit,
 
   } from "react-router-dom";
-  import { getContacts, createContact } from "../contacts";
+  import { getContacts } from "../contacts";
 
 
 
  // exports action function
   export async function action() {
-    const contact = await createContact();
-    return redirect(`/contacts/${contact.id}/edit`);
+    return redirect(`/contacts/create`);
   }
   
 // exports loader
@@ -100,9 +99,9 @@ export default function Root() {
                         : ""
                     }
                   >
-                    {contact.first || contact.last ? (
+                    {contact.firstname || contact.lastnamename ? (
                       <>
-                        {contact.first} {contact.last}
+                        {contact.firstname} {contact.lastname}
                       </>
                     ) : (
                       <i>No Name</i>
