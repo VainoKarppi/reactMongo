@@ -43,9 +43,9 @@ export async function getContact(id) {
 export async function updateContact(id, contact) {
     try {
         let data;
-
+        if (contact.id === undefined || contact.id === null) {
+          // CREATE NEW USER
           await axios.post("/api/contactRoutes/contacts",contact)
-          axios.post("/api/contactRoutes/contacts",contact)
             .then(response => {
               console.log('Contact created successfully:', response.data);
               data = response.data;
@@ -55,8 +55,8 @@ export async function updateContact(id, contact) {
           });
         } else {
             
+          // UPDATE EXISTING USER DATA
           await axios.patch(`/api/contactRoutes/contacts/${id}`,contact)
-          axios.patch(`/api/contactRoutes/contacts/${id}`,contact)
             .then(response => {
               console.log('Contact updated successfully:', response.data);
               data = response.data;
@@ -79,7 +79,7 @@ export async function updateContact(id, contact) {
 // Delete contact from list
 export async function deleteContact(id) {
   console.log(`Removing contact: ${id}`);
-
+  
   await axios.delete(`/api/contactRoutes/removeContact/${id}`)
       .catch(error => {
         console.error('Error removing contact:', error);
