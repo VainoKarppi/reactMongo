@@ -23,8 +23,16 @@ router.get('/allUsers', async (req, res) => {
 });
 
 // GET single user
-router.get('/:id', getUser, (req, res) => {
-  res.json(res.user);
+router.get('/contact/:id', async (req, res) => {
+    try {
+        let id = req.params.id;
+
+        let user = await Contact.find({ id });
+        res.status(201).json(user);
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ message: error.message });
+    }
 });
 
 // PUT old user
@@ -38,14 +46,21 @@ router.put('/createContact', async (req, res) => {
 
 
 // DLETE contact
-router.delete('/contacts/:id', async (req, res) => {
+router.delete('/removeContact/:id', async (req, res) => {
   try {
-    const deletedContact = await Contact.findByIdAndDelete(req.params.id);
+    let id = req.params.id;
+
+    console.log("Removing contact...");
+    console.log(id);
+
+    const deletedContact = await Contact.findOneAndDelete(id);
+
     if (!deletedContact) {
       return res.status(404).json({ message: 'Contact not found' });
     }
-    res.json({ message: 'Contact deleted successfully' });
+    res.status(201).json({ message: 'Contact deleted successfully' });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: err.message });
   }
 });
