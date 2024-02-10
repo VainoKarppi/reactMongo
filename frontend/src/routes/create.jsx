@@ -1,4 +1,4 @@
-import { Form, useLoaderData, redirect, useNavigate, } from "react-router-dom";
+import { Form, redirect, useNavigate, } from "react-router-dom";
 import { updateContact } from "../contacts";
 
 //exports update contact

@@ -35,7 +35,7 @@ export async function getContact(id) {
     console.log(`Requesting contact: ${id}`);
     const response = await axios.get(`/api/contactRoutes/contact/${id}`);
     if (response.data.lenght === 0 ) { return null; }
-    console.log(response.data);
+    console.log(response.data[0]);
     return response.data[0];
 }
 

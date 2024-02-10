@@ -10,7 +10,6 @@ export async function loader({ params }) {
 
   const contact = await getContact(params.contactId);
 
-  console.log(contact.id);
   if (!contact) {
     throw new Response("", {
       status: 404,
