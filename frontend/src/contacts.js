@@ -34,17 +34,17 @@ export async function getContacts(query) {
 export async function getContact(id) {
     console.log(`Requesting contact: ${id}`);
     const response = await axios.get(`/api/contactRoutes/contact/${id}`);
+    if (response.data.lenght === 0 ) { return null; }
     console.log(response.data);
-    return response.data;
+    return response.data[0];
 }
 
 // Update contacts list
 export async function updateContact(id, contact) {
     try {
         let data;
-        if (contact.id === undefined || contact.id === null) {
 
-          // CREATE NEW USER
+          await axios.post("/api/contactRoutes/contacts",contact)
           axios.post("/api/contactRoutes/contacts",contact)
             .then(response => {
               console.log('Contact created successfully:', response.data);
@@ -55,7 +55,7 @@ export async function updateContact(id, contact) {
           });
         } else {
             
-          // UPDATE EXISTING USER DATA
+          await axios.patch(`/api/contactRoutes/contacts/${id}`,contact)
           axios.patch(`/api/contactRoutes/contacts/${id}`,contact)
             .then(response => {
               console.log('Contact updated successfully:', response.data);
@@ -78,19 +78,14 @@ export async function updateContact(id, contact) {
 
 // Delete contact from list
 export async function deleteContact(id) {
-  //TODO backend
-  console.log("Removing contact...");
-  console.log(id);
+  console.log(`Removing contact: ${id}`);
 
-  await axios.delete("/api/contactRoutes/removeContact",id)
-      .then(response => {
-        console.log('Contact removed successfully:', response.data);
-        return true;
-      })
+  await axios.delete(`/api/contactRoutes/removeContact/${id}`)
       .catch(error => {
         console.error('Error removing contact:', error);
         return false;
     });
+    return true;
 }
 
 

@@ -4,15 +4,13 @@ import { getContact, updateContact, } from "../contacts";
 export async function loader({ params }) {
 
 
-    if (params.contactId === undefined) {
-      return {  };
-    }
-  console.log(params);
+  if (params.contactId === undefined) {
+    return {  };
+  }
+
   const contact = await getContact(params.contactId);
-  console.log(2);
 
-
-  
+  console.log(contact.id);
   if (!contact) {
     throw new Response("", {
       status: 404,
