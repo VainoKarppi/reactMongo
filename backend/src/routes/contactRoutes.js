@@ -53,7 +53,7 @@ router.delete('/removeContact/:id', async (req, res) => {
     console.log("Removing contact...");
     console.log(id);
 
-    const deletedContact = await Contact.findOneAndDelete(id);
+    const deletedContact = await Contact.findOneAndDelete({id});
 
     if (!deletedContact) {
       return res.status(404).json({ message: 'Contact not found' });
